@@ -1081,6 +1081,13 @@ impl<C: Chip> ProcessType for Process<'a, C> {
             flash_start
         ));
 
+        self.mpu_config.map(|mut config| {
+            self.chip.mpu().fmt(
+                &config,
+                writer,
+            );
+        });
+
         self.chip.userspace_kernel_boundary().process_detail_fmt(
             self.sp(),
             &self.stored_state.get(),
