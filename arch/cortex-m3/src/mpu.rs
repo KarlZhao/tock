@@ -1,7 +1,8 @@
 //! Implementation of the memory protection unit for the Cortex-M3 and
-//! Cortex-M4..
+//! Cortex-M4.
 
 use core::cmp;
+use core::fmt::Write;
 use kernel;
 use kernel::common::math;
 use kernel::common::registers::{register_bitfields, FieldValue, ReadOnly, ReadWrite};
@@ -606,6 +607,28 @@ impl kernel::mpu::MPU for MPU {
         for region in config.regions.iter() {
             regs.rbar.write(region.base_address());
             regs.rasr.write(region.attributes());
+        }
+    }
+
+    unsafe fn fmt(&self,
+        config: &Self::MpuConfig, writer: &mut dyn Write) {
+        let _ = writer.write_fmt(format_args!(
+            "\r\n  Cortex-M MPU"
+        ));
+        for (i,region) in config.regions.iter().enumerate() {
+            if let Some(location) = region.location() {
+                let _ = writer.write_fmt(format_args!(
+                    "\
+                    \r\n   Region {}: base:{:#x}, length:{}",
+                    i,
+                    location.0 as usize,
+                    location.1,
+                ));
+            } else {
+                let _ = writer.write_fmt(format_args!(
+                    "\r\n   Region {}: Unused", i
+                ));
+            }
         }
     }
 }
