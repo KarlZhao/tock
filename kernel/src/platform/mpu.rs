@@ -1,6 +1,7 @@
 //! Interface for configuring the Memory Protection Unit.
 
 use core::cmp;
+use core::fmt::Write;
 
 /// User mode access permissions.
 #[derive(Copy, Clone)]
@@ -186,6 +187,9 @@ pub trait MPU {
     /// `config`    : MPU region configuration
     #[allow(unused_variables)]
     fn configure_mpu(&self, config: &Self::MpuConfig) {}
+
+    unsafe fn fmt(&self,
+        config: &Self::MpuConfig, writer: &mut dyn Write) { }
 }
 
 /// Implement default MPU trait for unit.
